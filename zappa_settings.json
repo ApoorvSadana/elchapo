@@ -1,6 +1,6 @@
 {
     "staging": {
-        "s3_bucket": "dev-zappa-1-us",
+        "s3_bucket": "bitespeed-url-shortener",
         "aws_region": "us-east-1",
         "app_function": "app.app",
         "environment_variables": {
@@ -8,7 +8,7 @@
         }
     },
     "production": {
-        "s3_bucket": "dev-zappa-1-us",
+        "s3_bucket": "bitespeed-url-shortener",
         "aws_region": "us-east-1",
         "app_function": "app.app",
         "environment_variables": {

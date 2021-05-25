@@ -8,6 +8,7 @@ from constants import WEBHOOK, NOT_FOUND_URL, MAX_RETRY, MAX_URL_LENGTH
 from models import ShortURL
 from zappa.asynchronous import task
 import shortuuid
+from urllib.parse import unquote
 
 logging.getLogger("requests").setLevel(logging.WARNING)
 logging.getLogger("urllib3").setLevel(logging.WARNING)
@@ -44,6 +45,28 @@ def create_url():
     redirect_url = request.json['redirect_url']
     webhook = request.json.get('webhook', None)
     ShortURL(url=path, redirection_url=redirect_url, webhook=webhook).save()
+    return jsonify(success=True,path=path), 200
+
+@app.route('/c2', methods=['GET'])
+def create_url2():
+    # path = request.json['path']
+    length = 4
+    attempt = 0
+    path = None
+    while length<=MAX_URL_LENGTH:
+        path = shortuuid.ShortUUID().random(length=length)
+        if ShortURL.count(path):
+            attempt = attempt + 1
+            if attempt >= MAX_RETRY:
+                length = length + 1
+                attempt = 0
+        else:
+            break
+    if length > MAX_URL_LENGTH:
+        return jsonify(success=False), 500
+    redirect_url = unquote(request.args.get('redirect_url'))
+    # webhook = request.json.get('webhook', None)
+    ShortURL(url=path, redirection_url=redirect_url, webhook=None).save()
     return jsonify(success=True,path=path), 200
 
 
